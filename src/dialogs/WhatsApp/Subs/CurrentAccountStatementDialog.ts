@@ -5,7 +5,10 @@ import {
 	TBaseDialogCtor,
 } from 'cxperium-bot-engine';
 import { TButton } from 'cxperium-bot-engine/lib/types/whatsapp/message';
-import { getCurrentAccountStatement } from '../../../helpers/SQLConnection';
+import {
+	getCurrentAccountStatement,
+	getUserInformation,
+} from '../../../helpers/SQLConnection';
 import { createPdf, removePdfFromPath } from '../../../helpers/PDFCreator';
 
 export default class extends ServiceWhatsappBaseDialog implements IDialog {
@@ -16,9 +19,18 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 	async runDialog(): Promise<void> {
 		const customerId = await this.conversation.getCache('customerId');
 		const sqlResult = await getCurrentAccountStatement(customerId);
+		const userInformation = await getUserInformation(customerId);
+		sqlResult.forEach((x) => {
+			x.MİKTAR = formatNumberToLocale(x.MİKTAR);
+			x.TUTAR = formatNumberToLocale(x.TUTAR);
+			x.ÖDENEN = formatNumberToLocale(x.ÖDENEN);
+			x.KALAN = formatNumberToLocale(x.KALAN);
+		});
+		console.table(sqlResult);
 		const result = await createPdf(
 			sqlResult,
-			`${this.contact.userProfileName.replace(' ', '')}.pdf`,
+			userInformation,
+			`cari-hesap-ekstresi.pdf`,
 			1,
 		);
 
@@ -43,11 +55,18 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 			return;
 		}
 
-		const url = `${process.env.PUBLIC_URL}${this.contact.userProfileName.replace(' ', '')}.pdf`;
-		await this.sendDocumentWithUrl(
-			this.contact.userProfileName.replace(' ', ''),
-			url,
-		);
-		await removePdfFromPath(result.outputPath);
+		const url = `${process.env.PUBLIC_URL}cari-hesap-ekstresi.pdf`;
+		await this.sendDocumentWithUrl('Cari Hesap Ekstresi', url);
+		// await removePdfFromPath(result.outputPath);
 	}
+}
+
+function formatNumberToLocale(numberString) {
+	const number = parseFloat(numberString);
+	const formattedNumber = number.toLocaleString('tr-TR', {
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2,
+	});
+
+	return formattedNumber;
 }

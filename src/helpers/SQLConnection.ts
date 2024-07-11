@@ -52,6 +52,24 @@ async function getUserIdData2(customerPhone: string) {
 	}
 }
 
+async function getUserInformation(customerId: string) {
+	try {
+		const pool = await sql.connect(config);
+
+		const result = await pool
+			.request()
+			.input('customerId', sql.NVarChar(50), customerId).query(`
+				SELECT CustomerName AS [AD SOYAD], TaxNumber AS [TC KİMLİK], CONVERT(varchar, DateBirth,104) AS [DOĞUM TARİHİ], FatherName AS [BABA ADI] FROM Currents WHERE CustomerId = '324 21863568582';
+            `);
+
+		await sql.close();
+		return result.recordset;
+	} catch (err) {
+		await sql.close();
+		return `Hata: ${err}`;
+	}
+}
+
 async function getProducerReceiptList(customerId: string) {
 	try {
 		const pool = await sql.connect(config);
@@ -161,7 +179,13 @@ async function getCurrentAccountStatement(customerId: string) {
 				) X ORDER BY Tarih ASC
             `);
 		await sql.close();
-		return result.recordset;
+		return result.recordset.sort((a, b) => {
+			const [dayA, monthA, yearA] = a.TARİH.split('.');
+			const [dayB, monthB, yearB] = b.TARİH.split('.');
+			const dateA = new Date(`${yearA}-${monthA}-${dayA}`);
+			const dateB = new Date(`${yearB}-${monthB}-${dayB}`);
+			return dateA.getTime() - dateB.getTime();
+		});
 	} catch (err) {
 		await sql.close();
 		return `Hata: ${err}`;
@@ -198,6 +222,7 @@ async function getPaymentsMade(customerId: string) {
 export {
 	getUserIdData,
 	getUserIdData2,
+	getUserInformation,
 	getProducerReceiptList,
 	getTotalTeaSold,
 	getRemainingReceivableBalance,

@@ -16,11 +16,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 	async runDialog(): Promise<void> {
 		const customerId = await this.conversation.getCache('customerId');
 		const sqlResult = await getPaymentsMade(customerId);
-		const result = await createPdf(
-			sqlResult,
-			`${this.contact.userProfileName.replace(' ', '')}-yapilan-odemeler.pdf`,
-			2,
-		);
+		const result = await createPdf(sqlResult, 'yapilan-odemeler.pdf', 2);
 
 		if (result.status) {
 			const button: TButton[] = [
@@ -43,11 +39,8 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 			return;
 		}
 
-		const url = `${process.env.PUBLIC_URL}${this.contact.userProfileName.replace(' ', '')}-yapilan-odemeler.pdf`;
-		await this.sendDocumentWithUrl(
-			this.contact.userProfileName.replace(' ', ''),
-			url,
-		);
+		const url = `${process.env.PUBLIC_URL}yapilan-odemeler.pdf`;
+		await this.sendDocumentWithUrl('Yapılan Ödemeler', url);
 		await removePdfFromPath(result.outputPath);
 	}
 }

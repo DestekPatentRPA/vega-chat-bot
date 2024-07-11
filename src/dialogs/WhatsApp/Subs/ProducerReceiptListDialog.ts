@@ -31,7 +31,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		});
 		const result = await createPdf(
 			sqlResult,
-			`${this.contact.userProfileName.replace(' ', '')}-mustahsil-makbuz-listesi.pdf`,
+			'mustahsil-makbuz-listesi.pdf',
 			3,
 		);
 
@@ -52,11 +52,8 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 			return;
 		}
 
-		const url = `${process.env.PUBLIC_URL}${this.contact.userProfileName.replace(' ', '')}-mustahsil-makbuz-listesi.pdf`;
-		await this.sendDocumentWithUrl(
-			this.contact.userProfileName.replace(' ', ''),
-			url,
-		);
+		const url = `${process.env.PUBLIC_URL}mustahsil-makbuz-listesi.pdf`;
+		await this.sendDocumentWithUrl('Mustahsil Makbuz Listesi', url);
 		await removePdfFromPath(result.outputPath);
 	}
 }
