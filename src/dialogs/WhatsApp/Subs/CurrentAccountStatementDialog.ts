@@ -20,13 +20,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		const customerId = await this.conversation.getCache('customerId');
 		const sqlResult = await getCurrentAccountStatement(customerId);
 		const userInformation = await getUserInformation(customerId);
-		sqlResult.forEach((x) => {
-			x.MİKTAR = formatNumberToLocale(x.MİKTAR);
-			x.TUTAR = formatNumberToLocale(x.TUTAR);
-			x.ÖDENEN = formatNumberToLocale(x.ÖDENEN);
-			x.KALAN = formatNumberToLocale(x.KALAN);
-		});
-		console.table(sqlResult);
+
 		const result = await createPdf(
 			sqlResult,
 			userInformation,
@@ -59,14 +53,4 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		await this.sendDocumentWithUrl('Cari Hesap Ekstresi', url);
 		// await removePdfFromPath(result.outputPath);
 	}
-}
-
-function formatNumberToLocale(numberString) {
-	const number = parseFloat(numberString);
-	const formattedNumber = number.toLocaleString('tr-TR', {
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 2,
-	});
-
-	return formattedNumber;
 }

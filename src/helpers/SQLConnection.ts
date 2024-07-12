@@ -19,8 +19,8 @@ async function getUserIdData(customerPhone: string) {
 			.request()
 			.input('cleanPhone', sql.NVarChar(50), customerPhone).query(`
 				SELECT CustomerId
-        FROM dbo.Currents
-        WHERE REPLACE(REPLACE(REPLACE(REPLACE(Tel,'-',''),' ',''),')',''),'(','') = @cleanPhone
+        		FROM dbo.Currents
+        		WHERE REPLACE(REPLACE(REPLACE(REPLACE(Tel,'-',''),' ',''),')',''),'(','') = @cleanPhone
           `);
 
 		await sql.close();
@@ -155,7 +155,7 @@ async function getCurrentAccountStatement(customerId: string) {
 		const result = await pool
 			.request()
 			.input('customerId', sql.NVarChar(50), customerId).query(`
-				SELECT CONVERT(varchar, Tarih, 104) AS TARİH, [Alım Yeri Adı] AS [ALIM YERİ], [Ödeme Adı] AS [ALIM PLANI], [Belge No] AS [EVRAK NO], [Birim Fiyat] AS [FİYAT], [Net Miktar] AS [MİKTAR],
+				SELECT CONVERT(varchar, Tarih, 104) AS [TARİH], [Alım Yeri Adı] AS [ALIM YERİ], [Ödeme Adı] AS [ALIM PLANI], [Belge No] AS [EVRAK NO], [Birim Fiyat] AS [BRÜT FİYAT], [Net Miktar] AS [MİKTAR (KG)],
 				[Net Tutar] AS TUTAR, [ÖDENEN],
 				SUM(COALESCE([Net Tutar]-[ÖDENEN], 0)) OVER (ORDER BY Tarih ASC) AS KALAN
 				FROM (
@@ -199,13 +199,13 @@ async function getPaymentsMade(customerId: string) {
 		const result = await pool
 			.request()
 			.input('customerId', sql.NVarChar(50), customerId).query(`
-				SELECT BM.Date as TARİH,PP.PaymentName AS [ÖDEME ADI], BM.DocumentID AS [BELGE NO], BD.Balance AS [ÖDENEN]
+				SELECT CONVERT(varchar,BM.Date,104) as TARİH,PP.PaymentName AS [ÖDEME ADI], BM.DocumentID AS [BELGE NO], BD.Balance AS [ÖDENEN]
 				FROM BankMasters BM
 					LEFT JOIN BankDetails BD ON BD.MasterId=BM.ID
 					LEFT JOIN PaymentPlans PP ON PP.PaymentID=BM.PaymentID AND PP.BranchID=BM.BranchID
 				WHERE (BD.AccountID = @customerId)
 				UNION ALL
-				SELECT CM.Date as Tarih, PP.PaymentName AS [Ödeme Adı], CM.DocumentID AS [Belge No], CD.Balance AS [ÖDENEN]
+				SELECT CONVERT(varchar, CM.Date, 104) AS TARİH, PP.PaymentName AS [Ödeme Adı], CM.DocumentID AS [Belge No], CD.Balance AS [ÖDENEN]
 				FROM CashMasters CM
 					LEFT JOIN CashDetails CD ON CD.MasterId=CM.ID
 					LEFT JOIN PaymentPlans PP ON PP.PaymentID=CM.PaymentID AND PP.BranchID=CM.BranchID

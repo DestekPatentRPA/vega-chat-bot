@@ -5,7 +5,10 @@ import {
 	TBaseDialogCtor,
 } from 'cxperium-bot-engine';
 import { TButton } from 'cxperium-bot-engine/lib/types/whatsapp/message';
-import { getPaymentsMade } from '../../../helpers/SQLConnection';
+import {
+	getPaymentsMade,
+	getUserInformation,
+} from '../../../helpers/SQLConnection';
 import { createPdf, removePdfFromPath } from '../../../helpers/PDFCreator';
 
 export default class extends ServiceWhatsappBaseDialog implements IDialog {
@@ -16,7 +19,13 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 	async runDialog(): Promise<void> {
 		const customerId = await this.conversation.getCache('customerId');
 		const sqlResult = await getPaymentsMade(customerId);
-		const result = await createPdf(sqlResult, 'yapilan-odemeler.pdf', 2);
+		const userInformation = await getUserInformation(customerId);
+		const result = await createPdf(
+			sqlResult,
+			userInformation,
+			'yapilan-odemeler.pdf',
+			2,
+		);
 
 		if (result.status) {
 			const button: TButton[] = [
