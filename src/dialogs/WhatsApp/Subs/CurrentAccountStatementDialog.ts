@@ -51,6 +51,6 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 
 		const url = `${process.env.PUBLIC_URL}cari-hesap-ekstresi.pdf`;
 		await this.sendDocumentWithUrl('Cari Hesap Ekstresi', url);
-		// await removePdfFromPath(result.outputPath);
+		await removePdfFromPath(result.outputPath);
 	}
 }

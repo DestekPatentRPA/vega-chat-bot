@@ -13,11 +13,11 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 
 	async runDialog(): Promise<void> {
 		const rows: TRow[] = [
-			{
-				id: '#ProducerReceiptList',
-				title: '🍃 Müstahsil Makbuzlar',
-				description: '',
-			},
+			// {
+			// 	id: '#ProducerReceiptList',
+			// 	title: '🍃 Müstahsil Makbuzlar',
+			// 	description: '',
+			// },
 			{
 				id: '#TotalTeaSold',
 				title: '🍃 Toplam Satılan Çay',

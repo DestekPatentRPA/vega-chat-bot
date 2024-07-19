@@ -13,7 +13,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 	async runDialog(): Promise<void> {
 		//* if you want to finish entry throw this error.
 		// throw new Error('end');
-		const userId = await getUserIdData('5368876104');
+		const userId = await getUserIdData(this.contact.phone);
 		if (userId.length == 0 || userId.length > 1) {
 			await this.sendMessage(
 				'*‼️ Hata Mesajı* : Telefon numaranız sistemde kayıtlı değil veya birden fazla müşteri profili mevcut. Lütfen sistem yöneticisi ile görüşüp mevcut durumun düzeltilmesini talep ediniz.\n\n*🍃 Vega Gıda A.Ş. 🍃*',
