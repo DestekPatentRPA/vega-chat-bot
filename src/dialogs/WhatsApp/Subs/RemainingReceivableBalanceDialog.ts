@@ -22,7 +22,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		const customerId = await this.conversation.getCache('customerId');
 		const sqlResult = await getRemainingReceivableBalance(customerId);
 		await this.sendMessage(
-			`Sayın *${this.contact.userProfileName},*` +
+			`Sayın *${this.contact.userProfileName}*,` +
 				sqlResult[0].BAKIYEDURUM,
 		);
 
