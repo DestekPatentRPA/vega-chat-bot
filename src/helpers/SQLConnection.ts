@@ -24,6 +24,7 @@ async function getUserIdData(customerPhone: string) {
           `);
 
 		await sql.close();
+		
 		return result.recordset;
 	} catch (err) {
 		await sql.close();
