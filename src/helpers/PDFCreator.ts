@@ -198,10 +198,6 @@ export async function createPdf(
 				borderColor: rgb(0, 0, 0),
 				borderWidth: 1,
 			});
-			if (yPosition <= 100) {
-				const page2 = pdfDoc.addPage([900, 400]);
-				page = page2;
-			}
 		});
 		yPosition -= 15;
 	});

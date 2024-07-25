@@ -14,7 +14,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 
 	async runDialog(): Promise<void> {
 
-		const userId = await getUserIdData(this.contact.phone.substring(2,12));
+		const userId = await getUserIdData("5304184839");
 
 		console.log("userId", userId)
 
