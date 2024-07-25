@@ -20,9 +20,10 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 
 		if (userId.length == 0 || userId.length > 1) {
 			console.log("user.lenght")
-			await this.sendMessage(
+			const aaa = await this.sendMessage(
 				'*‼️ Hata Mesajı* : Telefon numaranız sistemde kayıtlı değil veya birden fazla müşteri profili mevcut. Lütfen sistem yöneticisi ile görüşüp mevcut durumun düzeltilmesini talep ediniz.\n\n*🍃 Vega Gıda A.Ş. 🍃*',
 			);
+			console.log("aaa", aaa);
 			throw new Error('end');
 		}
 
