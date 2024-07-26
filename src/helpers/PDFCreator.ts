@@ -291,7 +291,12 @@ async function drawLogo(pdfDoc, page, height) {
 }
 
 function drawDate(page, width, height, font, fontHeader, headerFontSize) {
-	const date = new Date().toLocaleDateString();
+	let day = "";
+	let month = "";
+	let year = "";
+	let a = new Date().toLocaleString().split(' ')[0];
+	[day, month, year] = a.split('.');
+	const date = `${day}.${month}.${year}`
 	page.drawText(date, {
 		x: width - font.widthOfTextAtSize(date, headerFontSize) - 30,
 		y: height - fontHeader.heightAtSize(24),

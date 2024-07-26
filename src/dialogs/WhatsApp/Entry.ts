@@ -11,19 +11,18 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 	constructor(data: TBaseDialogCtor) {
 		super(data);
 	}
-
+	// HASAN BEY TELEFON NUMARASI = 5305470851
 	async runDialog(): Promise<void> {
 
-		const userId = await getUserIdData("5304184839");
+		const userId = await getUserIdData(this.contact.phone.substring(2, 12));
 
 		console.log("userId", userId)
 
 		if (userId.length == 0 || userId.length > 1) {
 			console.log("user.lenght")
-			const aaa = await this.sendMessage(
+			await this.sendMessage(
 				'*‼️ Hata Mesajı* : Telefon numaranız sistemde kayıtlı değil veya birden fazla müşteri profili mevcut. Lütfen sistem yöneticisi ile görüşüp mevcut durumun düzeltilmesini talep ediniz.\n\n*🍃 Vega Gıda A.Ş. 🍃*',
 			);
-			console.log("aaa", aaa);
 			throw new Error('end');
 		}
 
