@@ -13,13 +13,9 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 	}
 	// HASAN BEY TELEFON NUMARASI = 5305470851
 	async runDialog(): Promise<void> {
-
 		const userId = await getUserIdData(this.contact.phone.substring(2, 12));
 
-		console.log("userId", userId)
-
 		if (userId.length == 0 || userId.length > 1) {
-			console.log("user.lenght")
 			await this.sendMessage(
 				'*‼️ Hata Mesajı* : Telefon numaranız sistemde kayıtlı değil veya birden fazla müşteri profili mevcut. Lütfen sistem yöneticisi ile görüşüp mevcut durumun düzeltilmesini talep ediniz.\n\n*🍃 Vega Gıda A.Ş. 🍃*',
 			);
@@ -29,6 +25,6 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		this.conversation.setCache('customerId', userId[0].CustomerId);
 
 		const getCustomerId = this.conversation.getCache('customerId');
-		console.log("getCustomerId", getCustomerId);
+		console.log('getCustomerId', getCustomerId);
 	}
 }

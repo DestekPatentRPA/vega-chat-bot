@@ -13,7 +13,7 @@ export async function createPdf(
 	const pdfDoc = await PDFDocument.create();
 
 	// Yeni bir sayfa ekle
-	let page = pdfDoc.addPage([900, 400]);
+	const page = pdfDoc.addPage([900, 260 + data.length * 15]);
 
 	// Özel bir yazı tipi yükle
 	pdfDoc.registerFontkit(fontkit);
@@ -60,7 +60,7 @@ export async function createPdf(
 	const headerFontSize = 10;
 	drawDate(page, width, height, font, fontHeader, headerFontSize);
 
-	let yPosition = 240;
+	let yPosition = 100 + data.length * 15;
 
 	const headers: string[] = getHeaders(headerType);
 	const cellWidth = (width - 40) / headers.length;
@@ -291,12 +291,12 @@ async function drawLogo(pdfDoc, page, height) {
 }
 
 function drawDate(page, width, height, font, fontHeader, headerFontSize) {
-	let day = "";
-	let month = "";
-	let year = "";
-	let a = new Date().toLocaleString().split(' ')[0];
+	let day = '';
+	let month = '';
+	let year = '';
+	const a = new Date().toLocaleString().split(' ')[0];
 	[day, month, year] = a.split('.');
-	const date = `${day}.${month}.${year}`
+	const date = `${day}.${month}.${year}`;
 	page.drawText(date, {
 		x: width - font.widthOfTextAtSize(date, headerFontSize) - 30,
 		y: height - fontHeader.heightAtSize(24),
@@ -515,18 +515,18 @@ function drawSummaryTableForPaymentsMade(
 	});
 }
 
-async function drawBackGround(pdfDoc, page, width, height) {
-	const bgPath = path.resolve(__dirname, '../public/vega.png');
-	const bgBytes = fs.readFileSync(bgPath);
-	const bg = await pdfDoc.embedPng(bgBytes);
-	page.drawImage(bg, {
-		x: width / 2 - 200,
-		y: height / 2 - 160,
-		width: 400,
-		height: 320,
-		opacity: 0.1,
-	});
-}
+// async function drawBackGround(pdfDoc, page, width, height) {
+// 	const bgPath = path.resolve(__dirname, '../public/vega.png');
+// 	const bgBytes = fs.readFileSync(bgPath);
+// 	const bg = await pdfDoc.embedPng(bgBytes);
+// 	page.drawImage(bg, {
+// 		x: width / 2 - 200,
+// 		y: height / 2 - 160,
+// 		width: 400,
+// 		height: 320,
+// 		opacity: 0.1,
+// 	});
+// }
 
 function formatNumberToLocale(numberString) {
 	const number = parseFloat(numberString);
