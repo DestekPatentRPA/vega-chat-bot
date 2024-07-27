@@ -27,7 +27,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		await this.sendButtonMessage(
 			'🍃 Bilgilendirme Mesajı',
 			'🍃 Vega Gıda A.Ş.',
-			`Sayın *${this.contact.userProfileName}*, şu anda bu modülümüz yapım aşamasındadır..*Ana Menüye* aşağıdaki buton ile devam edebilir diğer işlemlerinizi yapabilirsiniz.`,
+			`Sayın *${this.conversation.getCache('userName')}*, şu anda bu modülümüz yapım aşamasındadır..*Ana Menüye* aşağıdaki buton ile devam edebilir diğer işlemlerinizi yapabilirsiniz.`,
 			button,
 		);
 		// const customerId = await this.conversation.getCache('customerId');
@@ -57,7 +57,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		// 	const a = await this.sendListMessage(
 		// 		'🍃 Bilgilendirme Mesajı',
 		// 		'🍃 Vega Gıda A.Ş.',
-		// 		`Sayın *${this.contact.userProfileName}*, belgeniz hazırlanmaktadır. Bu süreçte *Ana Menüye* aşağıdaki buton ile devam edebilir diğer işlemlerinizi yapabilirsiniz.`,
+		// 		`Sayın *${this.conversation.getCache('userName')}*, belgeniz hazırlanmaktadır. Bu süreçte *Ana Menüye* aşağıdaki buton ile devam edebilir diğer işlemlerinizi yapabilirsiniz.`,
 		// 		'ETTN Listesi',
 		// 		ETTN,
 		// 	);

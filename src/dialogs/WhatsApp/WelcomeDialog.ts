@@ -20,22 +20,22 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 			// },
 			{
 				id: '#TotalTeaSold',
-				title: '🍃 Toplam Satılan Çay',
+				title: '🍃 Toplam Sattığım Çay',
 				description: '',
 			},
 			{
 				id: '#PaymentsMade',
-				title: '🍃 Yapılan Ödemeler',
+				title: '🍃 Bana Yapılan Ödemeler',
 				description: '',
 			},
 			{
 				id: '#RemainingReceivableBalance',
-				title: '🍃 Kalan Alacak Bakiyesi',
+				title: '🍃 Kalan Alacak Bakiyem',
 				description: '',
 			},
 			{
 				id: '#CurrentAccountStatement',
-				title: '🍃 Cari Hesap Ekstresi',
+				title: '🍃 Cari Hesap Ekstrem',
 				description: '',
 			},
 		];
@@ -43,7 +43,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		await this.sendListMessage(
 			'🍃 Vega Gıda A.Ş.',
 			'',
-			`Merhaba *${this.contact.userProfileName}*, ben Vega Dijital Asistanı. Lütfen aşağıdaki listeden yapmak istediğiniz işlemi seçiniz.`,
+			`Merhaba *${this.conversation.getCache('userName')}*, ben Vega Dijital Asistanı. Lütfen aşağıdaki listeden yapmak istediğiniz işlemi seçiniz.`,
 			'Menüyü göster',
 			rows,
 		);

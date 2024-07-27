@@ -38,7 +38,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 			await this.sendButtonMessage(
 				'🍃 Bilgilendirme Mesajı',
 				'🍃 Vega Gıda A.Ş.',
-				`Sayın *${this.contact.userProfileName}*, belgeniz hazırlanmaktadır. Bu süreçte *Ana Menüye* aşağıdaki buton ile devam edebilir diğer işlemlerinizi yapabilirsiniz.`,
+				`Sayın *${this.conversation.getCache('userName')}*, belgeniz hazırlanmaktadır. Bu süreçte *Ana Menüye* aşağıdaki buton ile devam edebilir diğer işlemlerinizi yapabilirsiniz.`,
 				button,
 			);
 			await new Promise((r) => setTimeout(r, 3000));

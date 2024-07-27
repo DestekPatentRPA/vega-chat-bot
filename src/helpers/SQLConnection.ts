@@ -24,7 +24,7 @@ async function getUserIdData(customerPhone: string) {
           `);
 
 		await sql.close();
-		
+
 		return result.recordset;
 	} catch (err) {
 		await sql.close();
@@ -98,7 +98,7 @@ async function getTotalTeaSold(customerId: string) {
 		const result = await pool
 			.request()
 			.input('customerId', sql.NVarChar(50), customerId).query(`
-				SELECT 'Toplam satılan yaş çay miktarı *' + convert(varchar,convert(decimal(8,2),SUM([Net Miktar]))) + '* kilogramdır.'
+				SELECT 'Tarafınızdan satın alınan toplam yaş çay miktarı *' + convert(varchar,convert(decimal(8,2),SUM([Net Miktar]))) + '* kilogramdır.'
 				FROM ViewBuyingFarmerDocument
 				WHERE ([Müstahsil Kodu] = @customerId)
             `);
@@ -119,7 +119,7 @@ async function getRemainingReceivableBalance(customerId: string) {
 			.request()
 			.input('customerId', sql.NVarChar(50), customerId).query(`
 				SELECT CASE 
-				WHEN SUM(COALESCE([Net Tutar]- [ÖDENEN],0)) > 0 THEN  convert(varchar,convert(decimal(8,2),SUM([Net Tutar]- [ÖDENEN]))) + ' ALACAK VEYA BORÇ BAKİYESİ BULUNMAKTADIR'
+				WHEN SUM(COALESCE([Net Tutar]- [ÖDENEN],0)) > 0 THEN  convert(varchar,convert(decimal(8,2),SUM([Net Tutar]- [ÖDENEN]))) + ' ALACAK BAKİYESİ BULUNMAKTADIR'
 				WHEN SUM(COALESCE([Net Tutar]- [ÖDENEN],0)) < 0 THEN  convert(varchar,convert(decimal(8,2),SUM([Net Tutar]- [ÖDENEN]))) + ' TL BORÇ BAKİYESİ BULUNMAKTADIR'
 				WHEN SUM(COALESCE([Net Tutar]- [ÖDENEN],0)) = 0 THEN '*0 TL* borç veya alacak bakiyesi bulunmamaktadır.'
 				END AS BAKIYEDURUM

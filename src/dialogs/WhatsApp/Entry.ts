@@ -5,7 +5,7 @@ import {
 	TBaseDialogCtor,
 } from 'cxperium-bot-engine';
 
-import { getUserIdData } from '../../helpers/SQLConnection';
+import { getUserIdData, getUserInformation } from '../../helpers/SQLConnection';
 
 export default class extends ServiceWhatsappBaseDialog implements IDialog {
 	constructor(data: TBaseDialogCtor) {
@@ -14,6 +14,8 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 	// HASAN BEY TELEFON NUMARASI = 5305470851
 	async runDialog(): Promise<void> {
 		const userId = await getUserIdData(this.contact.phone.substring(2, 12));
+		const userName = await getUserInformation(userId[0].CustomerId);
+		this.conversation.setCache('userName', userName[0]['AD SOYAD']);
 
 		if (userId.length == 0 || userId.length > 1) {
 			await this.sendMessage(

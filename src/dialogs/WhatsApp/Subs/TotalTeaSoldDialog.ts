@@ -24,7 +24,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		await this.sendButtonMessage(
 			'🍃 Bilgilendirme Mesajı',
 			'🍃 Vega Gıda A.Ş.',
-			`Sayın *${this.contact.userProfileName}*, ` +
+			`Sayın *${this.conversation.getCache('userName')}*, ` +
 				JSON.stringify(a[0]).split('"')[3] +
 				' Ana menüye aşağıdaki butondan devam edebilirsiniz.',
 			button,

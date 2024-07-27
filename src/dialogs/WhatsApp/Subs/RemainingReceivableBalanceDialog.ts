@@ -21,15 +21,11 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		];
 		const customerId = await this.conversation.getCache('customerId');
 		const sqlResult = await getRemainingReceivableBalance(customerId);
-		await this.sendMessage(
-			`Sayın *${this.contact.userProfileName}*,` +
-				sqlResult[0].BAKIYEDURUM,
-		);
 
 		await this.sendButtonMessage(
 			'🍃 Bilgilendirme Mesajı',
 			'🍃 Vega Gıda A.Ş.',
-			`Sayın *${this.contact.userProfileName}*, ` +
+			`Sayın *${this.conversation.getCache('userName')}*, ` +
 				sqlResult[0].BAKIYEDURUM +
 				' Ana menüye aşağıdaki butondan devam edebilirsiniz.',
 			button,
