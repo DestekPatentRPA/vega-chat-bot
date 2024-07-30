@@ -109,9 +109,7 @@ export async function createPdf(
 		headers.forEach((header, index) => {
 			const xPosition = 20 + cellWidth * index;
 			let cellValue =
-				String(row[header]) == 'undefined'
-					? '---'
-					: String(row[header]);
+				String(row[header]) == 'null' ? '---' : String(row[header]);
 			const isEvenRow = Math.floor(yPosition / cellHeight) % 2 === 0;
 			const cellColor = isEvenRow
 				? rgb(215 / 255, 215 / 255, 215 / 255)
@@ -131,7 +129,11 @@ export async function createPdf(
 				color: cellColor,
 			});
 			if (header == 'MİKTAR (KG)') {
-				if (cellValue == '0') {
+				if (
+					cellValue == '0' ||
+					cellValue == null ||
+					cellValue == '---'
+				) {
 					cellValue = '';
 				} else {
 					cellValue = formatNumberToLocale(cellValue);
@@ -376,7 +378,9 @@ function drawSummaryTableForCurrentAccountStatement(
 	let toplamOdenen = 0.0;
 	const toplamKalan = parseFloat(data[data.length - 1].KALAN);
 	data.forEach((x) => {
-		toplamMiktar = parseFloat(x['MİKTAR (KG)']) + toplamMiktar;
+		if (x['MİKTAR (KG)'] != null) {
+			toplamMiktar = parseFloat(x['MİKTAR (KG)']) + toplamMiktar;
+		}
 		toplamTutar = parseFloat(x.TUTAR) + toplamTutar;
 		toplamOdenen = parseFloat(x.ÖDENEN) + toplamOdenen;
 	});

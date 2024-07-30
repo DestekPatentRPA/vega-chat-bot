@@ -98,9 +98,11 @@ async function getTotalTeaSold(customerId: string) {
 		const result = await pool
 			.request()
 			.input('customerId', sql.NVarChar(50), customerId).query(`
-				SELECT 'Tarafınızdan satın alınan toplam yaş çay miktarı *' + convert(varchar,convert(decimal(8,2),SUM([Net Miktar]))) + '* kilogramdır.'
-				FROM ViewBuyingFarmerDocument
-				WHERE ([Müstahsil Kodu] = @customerId)
+				SELECT 'Tarafınızdan satın alınan toplam yaş çay miktarı *' + convert(varchar,convert(decimal(8,2),SUM([NetQuantity]))) + '* kilogramdır.'
+				FROM CurrentDetails CD 
+				LEFT JOIN CurrentMasters CM ON CM.ID = CD.MasterID 
+				LEFT JOIN FarmerMovents FM ON FM.CurrentId = @customerId AND FM.DocumentID = CM.DocumentID
+				where CD.AccountID = @customerId
             `);
 		await sql.close();
 		return result.recordset;
@@ -119,25 +121,15 @@ async function getRemainingReceivableBalance(customerId: string) {
 			.request()
 			.input('customerId', sql.NVarChar(50), customerId).query(`
 				SELECT CASE 
-				WHEN SUM(COALESCE([Net Tutar]- [ÖDENEN],0)) > 0 THEN  convert(varchar,convert(decimal(8,2),SUM([Net Tutar]- [ÖDENEN]))) + ' ALACAK BAKİYESİ BULUNMAKTADIR'
-				WHEN SUM(COALESCE([Net Tutar]- [ÖDENEN],0)) < 0 THEN  convert(varchar,convert(decimal(8,2),SUM([Net Tutar]- [ÖDENEN]))) + ' TL BORÇ BAKİYESİ BULUNMAKTADIR'
-				WHEN SUM(COALESCE([Net Tutar]- [ÖDENEN],0)) = 0 THEN '*0 TL* borç veya alacak bakiyesi bulunmamaktadır.'
+				WHEN SUM(COALESCE([Net Tutar] + [ÖDENEN],0)) > 0 THEN  convert(varchar,convert(decimal(8,2),SUM([Net Tutar]- [ÖDENEN]))) + ' TL ALACAK BAKİYESİ BULUNMAKTADIR'
+				WHEN SUM(COALESCE([Net Tutar] + [ÖDENEN],0)) < 0 THEN  convert(varchar,convert(decimal(8,2),SUM([Net Tutar]- [ÖDENEN]))) + ' TL BORÇ BAKİYESİ BULUNMAKTADIR'
+				WHEN SUM(COALESCE([Net Tutar] + [ÖDENEN],0)) = 0 THEN '0 TL BORÇ/ALACAK BAKİYESİ BULUNMAMAKTADIR.'
 				END AS BAKIYEDURUM
 				FROM
 				(
-					SELECT [Net Tutar], 0.00 AS [ÖDENEN]
-					FROM ViewBuyingFarmerDocument
-					WHERE ([Müstahsil Kodu] = @customerId)
-					UNION ALL
-					SELECT  0.00 AS [Net Tutar], BD.Balance AS [ÖDENEN]
-					FROM BankMasters BM
-						LEFT JOIN BankDetails BD ON BD.MasterId=BM.ID
-					WHERE (BD.AccountID= @customerId)
-					UNION ALL
-					SELECT 0.00 AS [Net Tutar], CD.Balance AS [ÖDENEN]
-					FROM CashMasters CM
-						LEFT JOIN CashDetails CD ON CD.MasterId=CM.ID
-					WHERE (CD.AccountID= @customerId)
+					select CD.Credit AS [Net Tutar], CD.Debit AS [ÖDENEN]  from 
+					CurrentDetails CD 
+					LEFT JOIN CurrentMasters CM ON CM.ID = CD.MasterID where CD.AccountID = @customerId
 				) AS DIPTOPLAM
             `);
 		console.log(result);
@@ -160,23 +152,14 @@ async function getCurrentAccountStatement(customerId: string) {
 				[Net Tutar] AS TUTAR, [ÖDENEN],
 				SUM(COALESCE([Net Tutar]-[ÖDENEN], 0)) OVER (ORDER BY Tarih ASC) AS KALAN
 				FROM (
-				SELECT Tarih, [Alım Yeri Adı], [Ödeme Adı], [Belge No], CONVERT(DECIMAL(10,2),[Birim Fiyat]) AS [Birim Fiyat], [Net Miktar], [Net Tutar], 0.00 AS [ÖDENEN]
-				FROM ViewBuyingFarmerDocument
-				WHERE ([Müstahsil Kodu] = @customerId)
-				UNION ALL
-				SELECT BM.Date as Tarih,'' AS [Alım Yeri Adı], PP.PaymentName AS [Ödeme Adı], BM.DocumentID AS [Belge No], 0.00 AS [Birim Fiyat], 0.00 AS [Net Miktar],
-				0.00 AS [Net Tutar], BD.Balance AS [ÖDENEN]
-				FROM BankMasters BM
-					LEFT JOIN BankDetails BD ON BD.MasterId=BM.ID
-					LEFT JOIN PaymentPlans PP ON PP.PaymentID=BM.PaymentID AND PP.BranchID=BM.BranchID
-				WHERE (BD.AccountID = @customerId)
-				UNION ALL
-				SELECT CM.Date as Tarih,'' AS [Alım Yeri Adı], PP.PaymentName AS [Ödeme Adı], CM.DocumentID AS [Belge No], 0.00 AS [Birim Fiyat], 0.00 AS [Net Miktar],
-				0.00 AS [Net Tutar], CD.Balance AS [ÖDENEN]
-				FROM CashMasters CM
-					LEFT JOIN CashDetails CD ON CD.MasterId=CM.ID
-					LEFT JOIN PaymentPlans PP ON PP.PaymentID=CM.PaymentID AND PP.BranchID=CM.BranchID
-				WHERE (CD.AccountID = @customerId)
+				Select CM.Date AS Tarih, W.WareHouseName AS [Alım Yeri Adı], PP.PaymentName AS [Ödeme Adı], CM.DocumentID AS [Belge No], CM.PaymentUnitPrice As [Birim Fiyat],
+				FM.NetQuantity AS [Net Miktar], CD.Credit AS [Net Tutar], CD.Debit AS [ÖDENEN]  from 
+				CurrentDetails CD 
+				LEFT JOIN CurrentMasters CM ON CM.ID = CD.MasterID 
+				LEFT JOIN PaymentPlans PP ON PP.PaymentID=CM.PaymentID AND PP.BranchID=CM.BranchID
+				LEFT JOIN WareHouses W ON W.WarehouseID=CM.WarehouseID AND W.BranchID=CM.BranchID AND W.CompanyID=CM.CompanyID
+				LEFT JOIN FarmerMovents FM ON FM.CurrentId = @customerId AND FM.DocumentID = CM.DocumentID
+				where CD.AccountID = @customerId
 				) X ORDER BY Tarih ASC
             `);
 		await sql.close();
@@ -200,17 +183,11 @@ async function getPaymentsMade(customerId: string) {
 		const result = await pool
 			.request()
 			.input('customerId', sql.NVarChar(50), customerId).query(`
-				SELECT CONVERT(varchar,BM.Date,104) as TARİH,PP.PaymentName AS [ÖDEME ADI], BM.DocumentID AS [BELGE NO], BD.Balance AS [ÖDENEN]
-				FROM BankMasters BM
-					LEFT JOIN BankDetails BD ON BD.MasterId=BM.ID
-					LEFT JOIN PaymentPlans PP ON PP.PaymentID=BM.PaymentID AND PP.BranchID=BM.BranchID
-				WHERE (BD.AccountID = @customerId)
-				UNION ALL
-				SELECT CONVERT(varchar, CM.Date, 104) AS TARİH, PP.PaymentName AS [Ödeme Adı], CM.DocumentID AS [Belge No], CD.Balance AS [ÖDENEN]
-				FROM CashMasters CM
-					LEFT JOIN CashDetails CD ON CD.MasterId=CM.ID
-					LEFT JOIN PaymentPlans PP ON PP.PaymentID=CM.PaymentID AND PP.BranchID=CM.BranchID
-				WHERE (CD.AccountID = @customerId)
+				Select CONVERT(varchar,CM.Date,104) AS TARİH, PP.PaymentName AS [ÖDEME ADI], CM.DocumentID AS [BELGE NO], CD.Debit AS [ÖDENEN], CD.AccountId  from 
+				CurrentDetails CD 
+				LEFT JOIN CurrentMasters CM ON CM.ID = CD.MasterID 
+				LEFT JOIN PaymentPlans PP ON PP.PaymentID=CM.PaymentID AND PP.BranchID=CM.BranchID
+				where CD.AccountID = @customerId AND CD.Debit > 0
             `);
 		await sql.close();
 		return result.recordset;
