@@ -1,10 +1,12 @@
 import * as sql from 'mssql';
 
+const year = new Date().getFullYear();
+
 const config: sql.config = {
 	user: process.env.DB_USER,
 	password: process.env.DB_PASSWORD,
 	server: process.env.DB_SERVER,
-	database: process.env.DB_DATABASE,
+	database: process.env.DB_DATABASE + year,
 	options: {
 		encrypt: false,
 		trustServerCertificate: true,
