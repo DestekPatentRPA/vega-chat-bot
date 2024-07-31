@@ -100,11 +100,12 @@ async function getTotalTeaSold(customerId: string) {
 		const result = await pool
 			.request()
 			.input('customerId', sql.NVarChar(50), customerId).query(`
-				SELECT 'Tarafınızdan satın alınan toplam yaş çay miktarı *' + convert(varchar,convert(decimal(8,2),SUM([NetQuantity]))) + '* kilogramdır.'
+				SELECT 
+    			'Tarafınızdan satın alınan toplam yaş çay miktarı *' + FORMAT(SUM([NetQuantity]), '#,##0.00', 'tr-TR') + '* kilogramdır.' AS FormattedText
 				FROM CurrentDetails CD 
 				LEFT JOIN CurrentMasters CM ON CM.ID = CD.MasterID 
 				LEFT JOIN FarmerMovents FM ON FM.CurrentId = @customerId AND FM.DocumentID = CM.DocumentID
-				where CD.AccountID = @customerId
+				WHERE CD.AccountID = @customerId
             `);
 		await sql.close();
 		return result.recordset;
@@ -123,16 +124,18 @@ async function getRemainingReceivableBalance(customerId: string) {
 			.request()
 			.input('customerId', sql.NVarChar(50), customerId).query(`
 				SELECT CASE 
-				WHEN SUM(COALESCE([Net Tutar] + [ÖDENEN],0)) > 0 THEN  convert(varchar,convert(decimal(8,2),SUM([Net Tutar]- [ÖDENEN]))) + ' TL ALACAK BAKİYESİ BULUNMAKTADIR'
-				WHEN SUM(COALESCE([Net Tutar] + [ÖDENEN],0)) < 0 THEN  convert(varchar,convert(decimal(8,2),SUM([Net Tutar]- [ÖDENEN]))) + ' TL BORÇ BAKİYESİ BULUNMAKTADIR'
-				WHEN SUM(COALESCE([Net Tutar] + [ÖDENEN],0)) = 0 THEN '0 TL BORÇ/ALACAK BAKİYESİ BULUNMAMAKTADIR.'
+    			WHEN SUM(COALESCE([Net Tutar] + [ÖDENEN],0)) > 0 THEN FORMAT(SUM([Net Tutar] - [ÖDENEN]), '#,##0.00', 'tr-TR') + ' TL ALACAK BAKİYESİ BULUNMAKTADIR.'
+    			WHEN SUM(COALESCE([Net Tutar] + [ÖDENEN],0)) < 0 THEN FORMAT(SUM([Net Tutar] - [ÖDENEN]), '#,##0.00', 'tr-TR') + ' TL BORÇ BAKİYESİ BULUNMAKTADIR.'
+    			WHEN SUM(COALESCE([Net Tutar] + [ÖDENEN],0)) = 0 THEN '0 TL BORÇ/ALACAK BAKİYESİ BULUNMAMAKTADIR.'
 				END AS BAKIYEDURUM
-				FROM
-				(
-					select CD.Credit AS [Net Tutar], CD.Debit AS [ÖDENEN]  from 
-					CurrentDetails CD 
-					LEFT JOIN CurrentMasters CM ON CM.ID = CD.MasterID where CD.AccountID = @customerId
-				) AS DIPTOPLAM
+				FROM (
+				    SELECT 
+				        CD.Credit AS [Net Tutar], 
+				        CD.Debit AS [ÖDENEN]  
+				    FROM CurrentDetails CD 
+				    LEFT JOIN CurrentMasters CM ON CM.ID = CD.MasterID 
+				    WHERE CD.AccountID = @customerId
+				) AS DIPTOPLAM;
             `);
 		console.log(result);
 		await sql.close();
