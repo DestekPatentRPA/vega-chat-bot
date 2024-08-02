@@ -154,10 +154,10 @@ async function getCurrentAccountStatement(customerId: string) {
 			.request()
 			.input('customerId', sql.NVarChar(50), customerId).query(`
 				SELECT CONVERT(varchar, Tarih, 104) AS [TARİH], [Alım Yeri Adı] AS [ALIM YERİ], [Ödeme Adı] AS [ALIM PLANI], [Belge No] AS [EVRAK NO], [Birim Fiyat] AS [BRÜT FİYAT], [Net Miktar] AS [MİKTAR (KG)],
-				[Net Tutar] AS TUTAR, [ÖDENEN],
-				SUM(COALESCE([Net Tutar]-[ÖDENEN], 0)) OVER (ORDER BY Tarih ASC) AS KALAN
+				[Net Tutar] AS TUTAR, [ÖDENEN], ID AS [MID], 
+				SUM(COALESCE([Net Tutar]-[ÖDENEN], 0)) OVER (ORDER BY Tarih, ID ASC) AS KALAN
 				FROM (
-				Select CM.Date AS Tarih, W.WareHouseName AS [Alım Yeri Adı], PP.PaymentName AS [Ödeme Adı], CM.DocumentID AS [Belge No], CM.PaymentUnitPrice As [Birim Fiyat],
+				select CM.Date AS Tarih, W.WareHouseName AS [Alım Yeri Adı], CM.ID,  PP.PaymentName AS [Ödeme Adı], CM.DocumentID AS [Belge No], CM.PaymentUnitPrice As [Birim Fiyat],
 				FM.NetQuantity AS [Net Miktar], CD.Credit AS [Net Tutar], CD.Debit AS [ÖDENEN]  from 
 				CurrentDetails CD 
 				LEFT JOIN CurrentMasters CM ON CM.ID = CD.MasterID 
@@ -165,7 +165,7 @@ async function getCurrentAccountStatement(customerId: string) {
 				LEFT JOIN WareHouses W ON W.WarehouseID=CM.WarehouseID AND W.BranchID=CM.BranchID AND W.CompanyID=CM.CompanyID
 				LEFT JOIN FarmerMovents FM ON FM.CurrentId = @customerId AND FM.DocumentID = CM.DocumentID
 				where CD.AccountID = @customerId
-				) X ORDER BY Tarih ASC
+				) X ORDER BY Tarih, ID ASC
             `);
 		await sql.close();
 		return result.recordset.sort((a, b) => {
