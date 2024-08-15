@@ -23,7 +23,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		const result = await createPdf(
 			sqlResult,
 			userInformation,
-			'yapilan-odemeler.pdf',
+			`${this.contact.phone}.pdf`,
 			2,
 		);
 
@@ -47,7 +47,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 			return;
 		}
 
-		const url = `${process.env.PUBLIC_URL}yapilan-odemeler.pdf`;
+		const url = `${process.env.PUBLIC_URL}${this.contact.phone}.pdf`;
 		console.log('url' + url);
 		const a = await this.sendDocumentWithUrl('Yapılan Ödemeler', url);
 		console.log(a);

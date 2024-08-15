@@ -24,7 +24,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		const result = await createPdf(
 			sqlResult,
 			userInformation,
-			`cari-hesap-ekstresi.pdf`,
+			`${this.contact.phone}.pdf`,
 			1,
 		);
 
@@ -48,11 +48,11 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 			return;
 		}
 
-		const url = `${process.env.PUBLIC_URL}cari-hesap-ekstresi.pdf`;
+		const url = `${process.env.PUBLIC_URL}${this.contact.phone}.pdf`;
 		console.log('responseSendDocumentWithUrl' + url);
 		const a = await this.sendDocumentWithUrl('Cari Hesap Ekstresi', url);
 		console.log(a);
-		await new Promise((r) => setTimeout(r, 3000));
+		await new Promise((r) => setTimeout(r, 120000));
 		await removePdfFromPath(result.outputPath);
 	}
 }
