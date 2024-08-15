@@ -46,12 +46,12 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 			);
 			return;
 		}
-
+		await new Promise((r) => setTimeout(r, 5000));
 		const url = `${process.env.PUBLIC_URL}${this.contact.phone}.pdf`;
 		console.log('url' + url);
 		const a = await this.sendDocumentWithUrl('Yapılan Ödemeler', url);
 		console.log(a);
-		await new Promise((r) => setTimeout(r, 3000));
+		await new Promise((r) => setTimeout(r, 120000));
 		await removePdfFromPath(result.outputPath);
 	}
 }
