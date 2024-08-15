@@ -48,7 +48,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 			return;
 		}
 
-		const url = 'https://vega.squad4x.com/files/yapilan-odemeler.pdf';
+		const url = `${process.env.PUBLIC_URL}yapilan-odemeler.pdf`;
 		const a = await this.sendDocumentWithUrl('Yapılan Ödemeler', url);
 		console.log(a);
 		await new Promise((r) => setTimeout(r, 30000));
