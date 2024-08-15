@@ -51,7 +51,11 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		const url = `${process.env.PUBLIC_URL}${this.contact.phone}.pdf`;
 		console.log('responseSendDocumentWithUrl' + url);
 		await new Promise((r) => setTimeout(r, 5000));
-		const a = await this.sendDocumentWithUrl('Cari Hesap Ekstresi', url);
+		const a = await this.sendDocumentWithUrl(
+			'Cari Hesap Ekstresi',
+			url,
+			'123123',
+		);
 		console.log(a);
 		await new Promise((r) => setTimeout(r, 120000));
 		await removePdfFromPath(result.outputPath);
