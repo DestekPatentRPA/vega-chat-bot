@@ -49,9 +49,10 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		}
 
 		const url = `${process.env.PUBLIC_URL}cari-hesap-ekstresi.pdf`;
+		console.log('responseSendDocumentWithUrl' + url);
 		const a = await this.sendDocumentWithUrl('Cari Hesap Ekstresi', url);
 		console.log(a);
-		await new Promise((r) => setTimeout(r, 30000));
+		await new Promise((r) => setTimeout(r, 3000));
 		await removePdfFromPath(result.outputPath);
 	}
 }
