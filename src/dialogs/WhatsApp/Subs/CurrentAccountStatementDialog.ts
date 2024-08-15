@@ -41,7 +41,6 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 				`Sayın *${this.conversation.getCache('userName')}*, belgeniz hazırlanmaktadır. Bu süreçte *Ana Menüye* aşağıdaki buton ile devam edebilir diğer işlemlerinizi yapabilirsiniz.`,
 				button,
 			);
-			await new Promise((r) => setTimeout(r, 3000));
 		} else {
 			await this.sendMessage(
 				'Sistemsel bir problem mevcuttur. Lütfen bizimle iletişime geçiniz.',
@@ -50,7 +49,9 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		}
 
 		const url = `${process.env.PUBLIC_URL}cari-hesap-ekstresi.pdf`;
-		await this.sendDocumentWithUrl('Cari Hesap Ekstresi', url);
+		const a = await this.sendDocumentWithUrl('Cari Hesap Ekstresi', url);
+		console.log(a);
+		await new Promise((r) => setTimeout(r, 30000));
 		await removePdfFromPath(result.outputPath);
 	}
 }
