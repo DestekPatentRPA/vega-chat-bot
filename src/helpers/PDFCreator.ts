@@ -234,6 +234,8 @@ export async function createPdf(
 	// 'pdfs' dizinini oluştur (eğer yoksa)
 	if (!fs.existsSync(outputDir)) {
 		fs.mkdirSync(outputDir);
+	} else {
+		console.log('dosya mevcut');
 	}
 
 	// PDF dosyasını belirli bir dizine kaydet
