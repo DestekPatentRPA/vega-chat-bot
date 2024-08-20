@@ -55,7 +55,8 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 			'Cari Hesap Ekstresi',
 			'https://yyegm.meb.gov.tr/meb_iys_dosyalar/2018_01/18225245_LisansProgramlari30102014.pdf',
 		);
-		await new Promise((r) => setTimeout(r, 120000));
+		console.log(a);
+		await new Promise((r) => setTimeout(r, 5000));
 		// await removePdfFromPath(result.outputPath);
 	}
 }
