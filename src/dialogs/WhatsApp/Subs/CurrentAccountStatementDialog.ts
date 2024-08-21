@@ -9,7 +9,7 @@ import {
 	getCurrentAccountStatement,
 	getUserInformation,
 } from '../../../helpers/SQLConnection';
-import { createPdf, removePdfFromPath } from '../../../helpers/PDFCreator';
+import { createPdf } from '../../../helpers/PDFCreator';
 
 export default class extends ServiceWhatsappBaseDialog implements IDialog {
 	constructor(data: TBaseDialogCtor) {
@@ -51,10 +51,7 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		const url = `${process.env.PUBLIC_URL}${this.contact.phone}.pdf`;
 		console.log('responseSendDocumentWithUrl' + url);
 		await new Promise((r) => setTimeout(r, 5000));
-		const a = await this.sendDocumentWithUrl(
-			'Cari Hesap Ekstresi',
-			'https://yyegm.meb.gov.tr/meb_iys_dosyalar/2018_01/18225245_LisansProgramlari30102014.pdf',
-		);
+		const a = await this.sendDocumentWithUrl('Cari Hesap Ekstresi', url);
 		console.log(a);
 		await new Promise((r) => setTimeout(r, 5000));
 		// await removePdfFromPath(result.outputPath);
