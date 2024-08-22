@@ -297,21 +297,14 @@ async function drawLogo(pdfDoc, page, height) {
 function drawDate(page, width, height, font, fontHeader, headerFontSize) {
 	const today = new Date();
 
-	const day1 = String(today.getDate()).padStart(2, '0'); // Gün
-	const month1 = String(today.getMonth() + 1).padStart(2, '0'); // Ay (0'dan başlar, bu yüzden +1 ekliyoruz)
-	const year1 = today.getFullYear(); // Yıl
+	const day1 = String(today.getDate()).padStart(2, '0');
+	const month1 = String(today.getMonth() + 1).padStart(2, '0');
+	const year1 = today.getFullYear();
 
-	const formattedDate = `${day1}/${month1}/${year1}`; // Gün/Ay/Yıl formatı
+	const formattedDate = `${day1}/${month1}/${year1}`;
 	console.log('test date ' + formattedDate);
-
-	let day = '';
-	let month = '';
-	let year = '';
-	const a = new Date().toLocaleString().split(' ')[0];
-	[day, month, year] = a.split('.');
-	const date = `${day}.${month}.${year}`;
-	page.drawText(date, {
-		x: width - font.widthOfTextAtSize(date, headerFontSize) - 30,
+	page.drawText(formattedDate, {
+		x: width - font.widthOfTextAtSize(formattedDate, headerFontSize) - 30,
 		y: height - fontHeader.heightAtSize(24),
 		font: fontHeader,
 		size: headerFontSize,
