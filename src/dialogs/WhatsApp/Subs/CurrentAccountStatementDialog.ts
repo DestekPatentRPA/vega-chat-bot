@@ -9,7 +9,7 @@ import {
 	getCurrentAccountStatement,
 	getUserInformation,
 } from '../../../helpers/SQLConnection';
-import { createPdf } from '../../../helpers/PDFCreator';
+import { createPdf, removePdfFromPath } from '../../../helpers/PDFCreator';
 
 export default class extends ServiceWhatsappBaseDialog implements IDialog {
 	constructor(data: TBaseDialogCtor) {
@@ -54,6 +54,6 @@ export default class extends ServiceWhatsappBaseDialog implements IDialog {
 		const a = await this.sendDocumentWithUrl('Cari Hesap Ekstresi', url);
 		console.log(a);
 		await new Promise((r) => setTimeout(r, 5000));
-		// await removePdfFromPath(result.outputPath);
+		await removePdfFromPath(result.outputPath);
 	}
 }

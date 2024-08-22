@@ -295,6 +295,16 @@ async function drawLogo(pdfDoc, page, height) {
 }
 
 function drawDate(page, width, height, font, fontHeader, headerFontSize) {
+	const today = new Date();
+
+	const day1 = String(today.getDate()).padStart(2, '0'); // Gün
+	const month1 = String(today.getMonth() + 1).padStart(2, '0'); // Ay (0'dan başlar, bu yüzden +1 ekliyoruz)
+	const year1 = today.getFullYear(); // Yıl
+
+	const formattedDate = `${day1}/${month1}/${year1}`; // Gün/Ay/Yıl formatı
+	console.log('test date ' + formattedDate);
+
+
 	let day = '';
 	let month = '';
 	let year = '';
