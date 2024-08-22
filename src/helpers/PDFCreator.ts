@@ -304,7 +304,6 @@ function drawDate(page, width, height, font, fontHeader, headerFontSize) {
 	const formattedDate = `${day1}/${month1}/${year1}`; // Gün/Ay/Yıl formatı
 	console.log('test date ' + formattedDate);
 
-
 	let day = '';
 	let month = '';
 	let year = '';
